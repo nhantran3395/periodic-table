@@ -3,7 +3,7 @@ export default {
 	lookup,
 };
 
-var elements;
+var elementLookUpTable = {};
 
 await loadPeriodicTable();
 
@@ -11,13 +11,16 @@ await loadPeriodicTable();
 // ****************************
 
 async function loadPeriodicTable() {
-	elements = await (await fetch("periodic-table.json")).json();
+	const elements = await (await fetch("periodic-table.json")).json();
+	elements.forEach(element => elementLookUpTable[`${element.symbol}`] = element);
 }
 
 function check(inputWord) {
 	if (inputWord.length <= 0) {
 		return [];
 	}
+
+	const elements = Object.values(elementLookUpTable);
 
 	for (let element of elements) {
 		const symbol = element.symbol;
@@ -38,10 +41,5 @@ function check(inputWord) {
 }
 
 function lookup(elementSymbol) {
-	const index = elements.findIndex(element => element.symbol.toLowerCase() === elementSymbol.toLowerCase());
-	if (index <= -1) {
-		throw new Error('cannot find element');
-	}
-
-	return elements[index];
+	return elementLookUpTable[elementSymbol];
 }
